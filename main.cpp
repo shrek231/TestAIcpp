@@ -61,26 +61,26 @@ struct AI {
                         IN_L1weight[i___] *= -.25;
                     }
                 }
+                //calc advrage cost and graph it with the weghtLoops variable mabey
+                printf("Calculating adv cost\n");
+                long addedCost = 0;
+                long Loops = 0;
+                for (int i_ = 0;i_ <= 50*5+trainLoops-1;i_++) {
+                    Loops++;
+                    addedCost += IN_L1cost[i_];
+                }for (int i_ = 0;i_ <= 50*50+trainLoops-1;i_++) {
+                    Loops++;
+                    addedCost += L1_L2cost[i_];
+                }for (int i_ = 0;i_ <= 50*5+trainLoops-1;i_++) {
+                    Loops++;
+                    addedCost += OPcost[i_];
+                } AvrCost[wl] = addedCost / Loops;
+                printf("Averages added %d\n",addedCost);
+                printf("Average Cost %d\n",AvrCost[0]);
                 long percent = i/trainLoops*100;
                 printf("Training: %d%s\n",percent,"% ");
             }
-            //calc advrage cost and graph it with the weghtLoops variable mabey
-            printf("Calculating adv cost\n");
-            long addedCost = 0;
-            long Loops = 0;
-            for (int i_ = 0;i_ <= 50*5+trainLoops-1;i_++) {
-                Loops++;
-                addedCost += IN_L1cost[i_];
-            }for (int i_ = 0;i_ <= 50*50+trainLoops-1;i_++) {
-                Loops++;
-                addedCost += L1_L2cost[i_];
-            }for (int i_ = 0;i_ <= 50*5+trainLoops-1;i_++) {
-                Loops++;
-                addedCost += OPcost[i_];
-            } AvrCost[wl] = addedCost / Loops;
-            printf("Averages added %d\n",addedCost);
-            printf("Average Cost %d\n",AvrCost[0]);
-            //save weghts;
+            //save weghts
         }
         //save best weghts
         printf("Finished Training\n");
