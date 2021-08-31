@@ -24,9 +24,9 @@ struct AI {
                 GetOutp();
                 //calc cost
                 for (int outp = 0; outp <= 5 - 1; outp++) {
-                    OPcost[trainLoops - 4 + outp] += pow(OPNneurons[outp] - ShouldOutput[outp], 2);//trainLoops - 4 becuse 5 outputs
-                    L1_L2cost[trainLoops - 2500 - 4 + outp] += pow(L2Nneurons[outp] - ShouldOutput[outp], 2);
-                    IN_L1cost[trainLoops - 2500 - 1 - 2500 - 1 - 4 + outp] += pow(L1Nneurons[outp] - ShouldOutput[outp], 2);
+                    OPcost[trainLoops - 5 - 1 + outp] += pow(OPNneurons[outp] - ShouldOutput[outp], 2);//trainLoops - 4 becuse 5 outputs
+                    L1_L2cost[trainLoops - 2500 - 1 - 5 - 1 + outp] += pow(L2Nneurons[outp] - ShouldOutput[outp], 2);
+                    IN_L1cost[trainLoops - 2500 - 1 - 2500 - 1 - 5 - 1 + outp] += pow(L1Nneurons[outp] - ShouldOutput[outp], 2);
                 }
                 //backwards propagation on output
                 for (int i = 0;i <= 50*5-1 ;i++){
@@ -55,8 +55,9 @@ struct AI {
                 addedCost += L1_L2cost[i];
                 addedCost += IN_L1cost[i];
             } AvrCost[wl] = addedCost / trainLoops * 2 + 8;
+            //save weghts;
         }
-        //save the weghts as a file
+        //save best weghts
     }
     int GetOutp(){ //loop the function
         int AllLoops = 0;
