@@ -15,9 +15,9 @@ struct AI {
         int L1_L2cost[50*50];
         int AvrCost[weghtLoops];
         int IN_L1cost[50*5];
-        for (int wl = 0;wl != weghtLoops;wl++) {
+        for (int wl = 0;wl <= weghtLoops - 1;wl++) {
             //set weghts
-            for (int i = 0; i != trainLoops; i++) {
+            for (int i = 0; i <= trainLoops - 1; i++) {
                 //set ShouldOutput to what it should output
 
                 //set inputs and run the AI
@@ -25,7 +25,7 @@ struct AI {
                 GetOutp();
                 //calc cost
                 printf("Calculating cost\n");
-                for (int outp = 0; outp <= 4; outp++) {
+                for (int outp = 0; outp <= 5-1; outp++) {
                     OPcost[ i + outp] += pow(OPNneurons[outp] - ShouldOutput[outp], 2);//trainLoops - 4 becuse 5 outputs
                     L1_L2cost[i + outp] += pow(L2Nneurons[outp] - ShouldOutput[outp], 2);
                     IN_L1cost[i + outp] += pow(L1Nneurons[outp] - ShouldOutput[outp], 2);
@@ -49,10 +49,11 @@ struct AI {
                         IN_L1weight[i___] *= .25;
                     }
                 }
-                int percent = i/trainLoops*100;
-                printf("Training: %d%s\n",i,"%");
+                float percent = i/trainLoops*100;
+                printf("Training: %d%s\n",percent,"% ");
             }
             //calc advrage cost and graph it with the weghtLoops variable mabey
+            printf("Calculating adv cost\n");
             int addedCost = 0;
             for (int i_ = 0;i_ != 50*5+50*50+50*5+trainLoops;i_++) {
                 addedCost += OPcost[i_];
@@ -62,28 +63,34 @@ struct AI {
             //save weghts;
         }
         //save best weghts
+        printf("Finished Training\n");
     }
     int GetOutp(){ //loop the function
         //calculate Neurons values
+        printf("Starting\n");
         for(int inW = 0;inW <= 50*5-1;inW++){
-            for (int connectEachN = 0;connectEachN <= 50-1;connectEachN++){
+            for (int connectEachN = 0;connectEachN <= 50*5-1;connectEachN++){
                 L1Nneurons[inW] = 1 / (1 + std::exp(-INneurons[connectEachN]*IN_L1weight[connectEachN] - 10));//bias 10
             }
         }
+        printf("Got Output L1\n");
         for(int l1W = 0;l1W <= 50*50-1;l1W++){
-            for (int connectEachN = 0;connectEachN <= 50-1;connectEachN++){
+            for (int connectEachN = 0;connectEachN <= 50*50-1;connectEachN++){
                 L2Nneurons[l1W] = 1 / (1 + std::exp(-L1Nneurons[connectEachN]*L1_L2weight[connectEachN] - 10));
             }
         }
+        printf("Got Output L2\n");
         for(int l2W = 0;l2W <= 50*5-1;l2W++){
-            for (int connectEachN = 0;connectEachN <= 50-1;connectEachN++){
+            for (int connectEachN = 0;connectEachN <= 50*5-1;connectEachN++){
                 OPNneurons[l2W] = 1 / (1 + std::exp(-L2Nneurons[connectEachN]*L2_OPweight[connectEachN] - 10));
             }
         }
+        printf("Got Output\n");
     }
 };
 int main() {
     AI* ai = new AI;
     ai->Train(50,1);
+    printf("Done\n");
     return 0;
 }
