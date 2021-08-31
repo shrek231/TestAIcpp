@@ -8,13 +8,13 @@ struct AI {
     int L2Nneurons[50];
     int L2_OPweight[50*5]; //L2Nneurons * OPNneurons
     int OPNneurons[5];
-    int Train(int trainLoops,int weghtLoops){//train loops is how many times it trains, weght loops is how many times it remakes the weghts after all the train loops, set to 1 by default, should output is what it should output
+    int Train(int trainLoops,int weghtLoops){//train loops is how many times it trains, weght loops is how many times it remakes the weghts after all the train loops, set to 1 by default\786
         printf("Training Started\n");
         int ShouldOutput[5];
-        int OPcost[trainLoops];
-        int L1_L2cost[trainLoops];
+        int OPcost[50*5];
+        int L1_L2cost[50*50];
         int AvrCost[weghtLoops];
-        int IN_L1cost[weghtLoops];
+        int IN_L1cost[50*5];
         for (int wl = 0;wl != weghtLoops;wl++) {
             //set weghts
             for (int i = 0; i != trainLoops; i++) {
@@ -24,24 +24,28 @@ struct AI {
 
                 GetOutp();
                 //calc cost
-                for (int outp = 0; outp <= 5 - 1; outp++) {
-                    OPcost[trainLoops - 5 + outp] += pow(OPNneurons[outp] - ShouldOutput[outp], 2);//trainLoops - 4 becuse 5 outputs
-                    L1_L2cost[trainLoops - 2500 - 5 + outp] += pow(L2Nneurons[outp] - ShouldOutput[outp], 2);
-                    IN_L1cost[trainLoops - 2500 - 2500 - 5 + outp] += pow(L1Nneurons[outp] - ShouldOutput[outp], 2);
+                printf("Calculating cost\n");
+                for (int outp = 0; outp <= 4; outp++) {
+                    OPcost[ i + outp] += pow(OPNneurons[outp] - ShouldOutput[outp], 2);//trainLoops - 4 becuse 5 outputs
+                    L1_L2cost[i + outp] += pow(L2Nneurons[outp] - ShouldOutput[outp], 2);
+                    IN_L1cost[i + outp] += pow(L1Nneurons[outp] - ShouldOutput[outp], 2);
                 }//backwards propagation on output
                 int BPGbias = 4;
+                printf("backwards propagation on output\n");
                 for (int i_ = 0;i_ <= 50*5-1 ;i_++){
-                    if (OPcost[trainLoops - 4 + i_] >= BPGbias){
+                    if (OPcost[i_] >= BPGbias){
                         L2_OPweight[i_] *= .25;
                     }
                 }//backwards propagation on layer 2 neurons
+                printf("backwards propagation on layer 2 neurons\n");
                 for (int i__ = 0;i__ <= 50*50-1 ;i__++){
-                    if (L1_L2cost[trainLoops - 4 + i__] >= BPGbias){
+                    if (L1_L2cost[i__] >= BPGbias){
                         L1_L2weight[i__] *= .25;
                     }
                 }//backwards propagation on layer 1 neurons
-                for (int i___ = 0;i___ <= 50*50-1 ;i___++){
-                    if (IN_L1cost[trainLoops - 4 + i___] >= BPGbias){
+                printf("backwards propagation on layer 1 neurons\n");
+                for (int i___ = 0;i___ <= 50*5-1 ;i___++){
+                    if (IN_L1cost[i___] >= BPGbias){
                         IN_L1weight[i___] *= .25;
                     }
                 }
@@ -50,7 +54,7 @@ struct AI {
             }
             //calc advrage cost and graph it with the weghtLoops variable mabey
             int addedCost = 0;
-            for (int i_ = 0;i_ != trainLoops;i_++) {
+            for (int i_ = 0;i_ != 50*5+50*50+50*5+trainLoops;i_++) {
                 addedCost += OPcost[i_];
                 addedCost += L1_L2cost[i_];
                 addedCost += IN_L1cost[i_];
