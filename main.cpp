@@ -23,10 +23,11 @@ struct AI {
                 L2_OPweight[RandW] = rand() % 10;
             }
             for (int i = 0; i <= trainLoops - 1; i++) {
+                float R = (rand() % 5)/5;
                 //set ShouldOutput to what it should output
-
+                ShouldOutput[(int)R*5] = R;
                 //set inputs and run the AI
-
+                INneurons[(int)R*5] = R;
                 GetOutp();
                 //calc cost
                 //printf("Calculating cost\n");
@@ -60,8 +61,8 @@ struct AI {
                         IN_L1weight[i___] *= -.25;
                     }
                 }
-                double percent = i/trainLoops*100;
-                printf("Training: %lf%s\n",percent,"% ");
+                long percent = i/trainLoops*100;
+                printf("Training: %d%s\n",percent,"% ");
             }
             //calc advrage cost and graph it with the weghtLoops variable mabey
             printf("Calculating adv cost\n");
