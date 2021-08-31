@@ -40,18 +40,24 @@ struct AI {
                 for (int i_ = 0;i_ <= 50*5-1 ;i_++){
                     if (OPcost[i_] >= BPGbias){
                         L2_OPweight[i_] *= .25;
+                    } else {
+                        L2_OPweight[i_] *= -.25;
                     }
                 }//backwards propagation on layer 2 neurons
                 //printf("backwards propagation on layer 2 neurons\n");
                 for (int i__ = 0;i__ <= 50*50-1 ;i__++){
                     if (L1_L2cost[i__] >= BPGbias){
                         L1_L2weight[i__] *= .25;
+                    } else {
+                        L1_L2weight[i__] *= -.25;
                     }
                 }//backwards propagation on layer 1 neurons
                 //printf("backwards propagation on layer 1 neurons\n");
                 for (int i___ = 0;i___ <= 50*5-1 ;i___++){
                     if (IN_L1cost[i___] >= BPGbias){
                         IN_L1weight[i___] *= .25;
+                    } else {
+                        IN_L1weight[i___] *= -.25;
                     }
                 }
                 double percent = i/trainLoops*100;
@@ -59,14 +65,19 @@ struct AI {
             }
             //calc advrage cost and graph it with the weghtLoops variable mabey
             printf("Calculating adv cost\n");
-            int addedCost = 0;
+            long addedCost = 0;
+            long Loops = 0;
             for (int i_ = 0;i_ <= 50*5+trainLoops-1;i_++) {
+                Loops++;
                 addedCost += IN_L1cost[i_];
             }for (int i_ = 0;i_ <= 50*50+trainLoops-1;i_++) {
+                Loops++;
                 addedCost += L1_L2cost[i_];
             }for (int i_ = 0;i_ <= 50*5+trainLoops-1;i_++) {
+                Loops++;
                 addedCost += OPcost[i_];
-            } AvrCost[wl] = addedCost / trainLoops * 2 + 8;
+            } AvrCost[wl] = addedCost / Loops;
+            printf("Averages added %d\n",addedCost);
             printf("Average Cost %d\n",AvrCost[0]);
             //save weghts;
         }
