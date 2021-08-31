@@ -17,10 +17,12 @@ struct AI {
         int IN_L1cost[50*5];
         for (int wl = 0;wl <= weghtLoops - 1;wl++) {
             //set weghts 0,10 becuse 10 is our bias
-            for(int RandW = 0; RandW <= 50*5+50*50+50*5-1; RandW++){
-                IN_L1weight[RandW] = rand() % 10;
-                L1_L2weight[RandW] = rand() % 10;
-                L2_OPweight[RandW] = rand() % 10;
+            for(int RandW = 0; RandW <= 50*5-1; RandW++){
+                IN_L1weight[RandW] = (rand() % 20)/2;
+            }for(int RandW = 0; RandW <= 50*50-1; RandW++){
+                L1_L2weight[RandW] = (rand() % 20)/2;
+            }for(int RandW = 0; RandW <= 50*5-1; RandW++){
+                L2_OPweight[RandW] = (rand() % 10)/2;
             }
             for (int i = 0; i <= trainLoops - 1; i++) {
                 float R = (rand() % 5)/5;
@@ -40,25 +42,25 @@ struct AI {
                 //printf("backwards propagation on output\n");
                 for (int i_ = 0;i_ <= 50*5-1 ;i_++){
                     if (OPcost[i_] >= BPGbias){
-                        L2_OPweight[i_] *= .25;
+                        L2_OPweight[i_] *= .15;
                     } else {
-                        L2_OPweight[i_] *= -.25;
+                        L2_OPweight[i_] *= -.15;
                     }
                 }//backwards propagation on layer 2 neurons
                 //printf("backwards propagation on layer 2 neurons\n");
                 for (int i__ = 0;i__ <= 50*50-1 ;i__++){
                     if (L1_L2cost[i__] >= BPGbias){
-                        L1_L2weight[i__] *= .25;
+                        L1_L2weight[i__] *= .15;
                     } else {
-                        L1_L2weight[i__] *= -.25;
+                        L1_L2weight[i__] *= -.15;
                     }
                 }//backwards propagation on layer 1 neurons
                 //printf("backwards propagation on layer 1 neurons\n");
                 for (int i___ = 0;i___ <= 50*5-1 ;i___++){
                     if (IN_L1cost[i___] >= BPGbias){
-                        IN_L1weight[i___] *= .25;
+                        IN_L1weight[i___] *= .15;
                     } else {
-                        IN_L1weight[i___] *= -.25;
+                        IN_L1weight[i___] *= -.15;
                     }
                 }
                 //calc advrage cost and graph it with the weghtLoops variable mabey
