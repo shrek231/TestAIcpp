@@ -1,28 +1,28 @@
 #include <iostream>
 #include <valarray>
 struct AI {
-    int INneurons[5];
-    int IN_L1weight[50*5]; //INneurons * L1Nneurons
-    int L1Nneurons[50];
-    int L1_L2weight[50*50]; //L1Nneurons * L2Nneurons
-    int L2Nneurons[50];
-    int L2_OPweight[50*5]; //L2Nneurons * OPNneurons
-    int OPNneurons[5];
+    float INneurons[5];
+    float IN_L1weight[50*5]; //INneurons * L1Nneurons
+    float L1Nneurons[50];
+    float L1_L2weight[50*50]; //L1Nneurons * L2Nneurons
+    float L2Nneurons[50];
+    float L2_OPweight[50*5]; //L2Nneurons * OPNneurons
+    float OPNneurons[5];
     int Train(int trainLoops,int weghtLoops){//train loops is how many times it trains, weght loops is how many times it remakes the weghts after all the train loops, set to 1 by default\786
         printf("Training Started\n");
-        int ShouldOutput[5];
-        int OPcost[50*5];
-        int L1_L2cost[50*50];
-        int AvrCost[weghtLoops];
-        int IN_L1cost[50*5];
+        float ShouldOutput[5];
+        float OPcost[50*5];
+        float L1_L2cost[50*50];
+        float AvrCost[weghtLoops];
+        float IN_L1cost[50*5];
         for (int wl = 0;wl <= weghtLoops - 1;wl++) {
             //set weghts 0,10 becuse 10 is our bias
             for(int RandW = 0; RandW <= 50*5-1; RandW++){
-                IN_L1weight[RandW] = (rand() % 20 - 10);
+                IN_L1weight[RandW] = (float)(rand() % 20 - 10);
             }for(int RandW = 0; RandW <= 50*50-1; RandW++){
-                L1_L2weight[RandW] = (rand() % 20 - 10);
+                L1_L2weight[RandW] = (float)(rand() % 20 - 10);
             }for(int RandW = 0; RandW <= 50*5-1; RandW++){
-                L2_OPweight[RandW] = (rand() % 20 - 10);
+                L2_OPweight[RandW] = (float)(rand() % 20 - 10);
             }
             for (int i = 0; i <= trainLoops - 1; i++) {
                 float R = (rand() % 5)/5;
@@ -43,42 +43,42 @@ struct AI {
                 printf("backwards propagation on output\n");
                 for (int i_ = 0;i_ <= 50*5-1 ;i_++){
                     if (L2_OPweight[i_] >= 0){ //if the weight is positive, increase
-                        printf("Ow: %d\n",L2_OPweight[i_]);
+                        //printf("Ow: %g\n",L2_OPweight[i_]);
                         L2_OPweight[i_] += .15;
-                        printf("Cw: %d\n",L2_OPweight[i_]);
+                        //printf("Cw: %g\n",L2_OPweight[i_]);
                     } else {
-                        printf("Ow: %d\n",L2_OPweight[i_]);
+                        //printf("Ow: %g\n",L2_OPweight[i_]);
                         L2_OPweight[i_] -= .15;
-                        printf("Cw: %d\n",L2_OPweight[i_]);
+                        //printf("Cw: %g\n",L2_OPweight[i_]);
                     }
                 }//backwards propagation on layer 2 neurons
                 printf("backwards propagation on layer 2 neurons\n");
                 for (int i__ = 0;i__ <= 50*50-1 ;i__++){
                     if (L1_L2weight[i__] >= 0){
-                        printf("Ow: %d\n",L1_L2weight[i__]);
+                        //printf("Ow: %g\n",L1_L2weight[i__]);
                         L1_L2weight[i__] += .15;
-                        printf("Cw: %d\n",L1_L2weight[i__]);
+                        //printf("Cw: %g\n",L1_L2weight[i__]);
                     } else {
-                        printf("Ow: %d\n",L1_L2weight[i__]);
+                        //printf("Ow: %g\n",L1_L2weight[i__]);
                         L1_L2weight[i__] -= .15;
-                        printf("Cw: %d\n",L1_L2weight[i__]);
+                        //printf("Cw: %g\n",L1_L2weight[i__]);
                     }
                 }//backwards propagation on layer 1 neurons
                 printf("backwards propagation on layer 1 neurons\n");
                 for (int i___ = 0;i___ <= 50*5-1 ;i___++){
                     if (IN_L1weight[i___] >= 0){
-                        printf("Ow: %d\n",IN_L1weight[i___]);
+                        //printf("Ow: %g\n",IN_L1weight[i___]);
                         IN_L1weight[i___] += .15;
-                        printf("Cw: %d\n",IN_L1weight[i___]);
+                        //printf("Cw: %g\n",IN_L1weight[i___]);
                     } else {
-                        printf("Ow: %d\n",IN_L1weight[i___]);
+                        //printf("Ow: %g\n",IN_L1weight[i___]);
                         IN_L1weight[i___] -= .15;
-                        printf("Cw: %d\n",IN_L1weight[i___]);
+                        //printf("Cw: %g\n",IN_L1weight[i___]);
                     }
                 }
                 //calc advrage cost and graph it with the weghtLoops variable mabey
                 printf("Calculating adv cost\n");
-                long addedCost = 0;
+                float addedCost = 0;
                 long Loops = 0;
                 for (int i_ = 0;i_ <= 50*5+trainLoops-1;i_++) {
                     Loops++;
@@ -90,10 +90,10 @@ struct AI {
                     Loops++;
                     addedCost += OPcost[i_];
                 } AvrCost[wl] = addedCost / Loops;
-                printf("Averages added %d\n",addedCost);
-                printf("Average Cost %d\n",AvrCost[0]);
-                long percent = i/trainLoops*100;
-                printf("Training: %d%s\n",percent,"% ");
+                printf("Averages added %g\n",addedCost);
+                printf("Average Cost %g\n",AvrCost[0]);
+                float percent = i/trainLoops*100;
+                printf("Training: %g%s\n",percent,"% ");
             }
             //save weghts
         }
