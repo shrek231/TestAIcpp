@@ -55,7 +55,7 @@ struct AI {
                     if (L1_L2weight[i__] >= 0){
                         L1_L2weight[i__] += .15;
                     } else {
-                        L1_L2weight[i__] += -.15;
+                        L1_L2weight[i__] -= .15;
                     }
                 }//backwards propagation on layer 1 neurons
                 printf("backwards propagation on layer 1 neurons\n");
@@ -63,7 +63,7 @@ struct AI {
                     if (IN_L1weight[i___] >= 0){
                         IN_L1weight[i___] += .15;
                     } else {
-                        IN_L1weight[i___] += -.15;
+                        IN_L1weight[i___] -= .15;
                     }
                 }
                 //calc advrage cost and graph it with the weghtLoops variable mabey
