@@ -47,23 +47,33 @@ struct AI {
                         L2_OPweight[i_] += .15;
                         printf("Cw: %d\n",L2_OPweight[i_]);
                     } else {
+                        printf("Ow: %d\n",L2_OPweight[i_]);
                         L2_OPweight[i_] -= .15;
+                        printf("Cw: %d\n",L2_OPweight[i_]);
                     }
                 }//backwards propagation on layer 2 neurons
                 printf("backwards propagation on layer 2 neurons\n");
                 for (int i__ = 0;i__ <= 50*50-1 ;i__++){
                     if (L1_L2weight[i__] >= 0){
+                        printf("Ow: %d\n",L1_L2weight[i__]);
                         L1_L2weight[i__] += .15;
+                        printf("Cw: %d\n",L1_L2weight[i__]);
                     } else {
+                        printf("Ow: %d\n",L1_L2weight[i__]);
                         L1_L2weight[i__] -= .15;
+                        printf("Cw: %d\n",L1_L2weight[i__]);
                     }
                 }//backwards propagation on layer 1 neurons
                 printf("backwards propagation on layer 1 neurons\n");
                 for (int i___ = 0;i___ <= 50*5-1 ;i___++){
                     if (IN_L1weight[i___] >= 0){
+                        printf("Ow: %d\n",IN_L1weight[i___]);
                         IN_L1weight[i___] += .15;
+                        printf("Cw: %d\n",IN_L1weight[i___]);
                     } else {
+                        printf("Ow: %d\n",IN_L1weight[i___]);
                         IN_L1weight[i___] -= .15;
+                        printf("Cw: %d\n",IN_L1weight[i___]);
                     }
                 }
                 //calc advrage cost and graph it with the weghtLoops variable mabey
