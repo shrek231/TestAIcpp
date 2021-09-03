@@ -8,13 +8,14 @@ struct AI {
     float L2Nneurons[50];
     float L2_OPweight[50*5]; //L2Nneurons * OPNneurons
     float OPNneurons[5];
+
+    float ShouldOutput[5];
+    float OPcost[50*5];
+    float L1_L2cost[50*50];
+    float IN_L1cost[50*5];
     int Train(int trainLoops,int weghtLoops){//train loops is how many times it trains, weght loops is how many times it remakes the weghts after all the train loops, set to 1 by default\786
         printf("Training Started\n");
-        float ShouldOutput[5];
-        float OPcost[50*5];
-        float L1_L2cost[50*50];
         float AvrCost[weghtLoops];
-        float IN_L1cost[50*5];
         for (int wl = 0;wl <= weghtLoops - 1;wl++) {
             //set weghts 0,10 becuse 10 is our bias
             for(int RandW = 0; RandW <= 50*5-1; RandW++){
@@ -32,16 +33,34 @@ struct AI {
                 GetOutp();
                 //calc cost
                 printf("Calculating cost\n");
-                for (int outp = 0; outp <= 5-1; outp++) {
-                    OPcost[ i + outp] += pow(OPNneurons[outp] - ShouldOutput[outp], 2);
-                }for (int outp = 0; outp <= 50-1; outp++) {
-                    L1_L2cost[i + outp] += pow(L2Nneurons[outp] - ShouldOutput[outp], 2);
-                }for (int outp = 0; outp <= 5-1; outp++) {
-                    IN_L1cost[i + outp] += pow(L1Nneurons[outp] - ShouldOutput[outp], 2);
+                /*for (int outp = 0; outp <= 5-1; outp++) {
+                    OPcost[outp] += pow(OPNneurons[outp] - ShouldOutput[outp], 2);
+                }*/
+                for (int i = 0; i <= 5-1; i++) {
+                    for (int opn = 0; opn <= 5 - 1; opn++) {
+                        for (int outp = 0; outp <= 50 - 1; outp++) {
+                            OPcost[i] += pow(OPNneurons[outp] - ShouldOutput[opn],2);
+                        }
+                    }
+                }for (int i = 0; i <= 50-1; i++) {
+                    for (int opn = 0; opn <= 5 -1; opn++) {
+                        for (int outp = 0; outp <= 50 - 1; outp++) {
+                            L1_L2cost[i] += pow(L2Nneurons[outp] - OPNneurons[opn],2);
+                        }
+                    }
+                }/*for (int outp = 0; outp <= 5-1; outp++) {
+                    IN_L1cost[outp] += pow(L1Nneurons[outp] - L2Nneurons[0], 2);
+                }*/
+                for (int i = 0; i <= 5-1; i++) {
+                    for (int opn = 0; opn <= 5 - 1; opn++) {
+                        for (int outp = 0; outp <= 50 - 1; outp++) {
+                            IN_L1cost[i] += pow(L1Nneurons[outp] - L2Nneurons[opn],2);
+                        }
+                    }
                 }//backwards propagation on output
                 printf("backwards propagation on output\n");
                 for (int i_ = 0;i_ <= 50*5-1 ;i_++){
-                    if (L2_OPweight[i_] >= 3.5){ //if the weight is positive, increase
+                    if (OPcost[i_] <= 3.5){ //if the cost is below 3.5, increase
                         L2_OPweight[i_] += .15;
                     } else {
                         L2_OPweight[i_] -= .15;
@@ -49,7 +68,7 @@ struct AI {
                 }//backwards propagation on layer 2 neurons
                 printf("backwards propagation on layer 2 neurons\n");
                 for (int i__ = 0;i__ <= 50*50-1 ;i__++){
-                    if (L1_L2weight[i__] >= 3.5){
+                    if (L1_L2cost[i__] <= 3.5){
                         L1_L2weight[i__] += .15;
                     } else {
                         L1_L2weight[i__] -= .15;
@@ -57,7 +76,7 @@ struct AI {
                 }//backwards propagation on layer 1 neurons
                 printf("backwards propagation on layer 1 neurons\n");
                 for (int i___ = 0;i___ <= 50*5-1 ;i___++){
-                    if (IN_L1weight[i___] >= 3.5){
+                    if (IN_L1cost[i___] <= 3.5){
                         IN_L1weight[i___] += .15;
                     } else {
                         IN_L1weight[i___] -= .15;
@@ -93,7 +112,7 @@ struct AI {
         for (int connectEachW; connectEachW <= 50 * 5 - 1; connectEachW++) {
             for (int i = 0; i <= 5-1; i++) {
                 for (int i_loop = 0; i_loop <= 5 - 1; i_loop++) {
-                    L1Nneurons[i] += 1 / (1 + std::exp(-INneurons[i_loop] * IN_L1weight[connectEachW] - 10));//bias 10
+                    L1Nneurons[i] = 1 / (1 + L1Nneurons[i] + std::exp(-INneurons[i_loop] * IN_L1weight[connectEachW] - 10));//bias 10
                 }
             }
         }
@@ -107,7 +126,7 @@ struct AI {
         for (int connectEachW; connectEachW <= 50 * 50 - 1; connectEachW++) {
             for (int i = 0; i <= 5-1; i++) {
                 for (int i_loop = 0; i_loop <= 5 - 1; i_loop++) {
-                    L2Nneurons[i] += 1 / (1 + std::exp(-L1Nneurons[i_loop] * L1_L2weight[connectEachW] - 10));//bias 10
+                    L2Nneurons[i] = 1 / (1 + L2Nneurons[i] + std::exp(-L1Nneurons[i_loop] * L1_L2weight[connectEachW] - 10));//bias 10
                 }
             }
         }
@@ -121,7 +140,7 @@ struct AI {
         for (int connectEachW; connectEachW <= 50 * 5 - 1; connectEachW++) {
             for (int i = 0; i <= 5-1; i++) {
                 for (int i_loop = 0; i_loop <= 5 - 1; i_loop++) {
-                    OPNneurons[i] += 1 / (1 + std::exp(-L2Nneurons[i_loop] * L2_OPweight[connectEachW] - 10));//bias 10
+                    OPNneurons[i] = 1 / (1 + OPNneurons[i] + std::exp(-L2Nneurons[i_loop] * L2_OPweight[connectEachW] - 10));//bias 10
                 }
             }
         }
