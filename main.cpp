@@ -1,5 +1,7 @@
+#define SDL_MAIN_HANDLED
 #include <iostream>
 #include <valarray>
+#include <SDL2/SDL.h>
 struct AI {
     float INneurons[5];
     float IN_L1weight[50*5]; //INneurons * L1Nneurons
@@ -138,7 +140,19 @@ struct AI {
         }
     }
 };
-int main() {
+int main(int argc, char *argv[]) {
+    //graphics
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_Window* window = SDL_CreateWindow("Ai Test", SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED, 300, 200, SDL_WINDOW_SHOWN);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
+    SDL_SetRenderDrawColor(renderer, 155, 155, 155, 255);
+    //Clear the renderer with the draw color
+    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer,255, 100, 100, 255);
+    SDL_RenderDrawPoint(renderer, 10, 10);
+    //Update the renderer which will show the renderer cleared by the draw color which is green
+    SDL_RenderPresent(renderer);
+    //
     AI* ai = new AI;
     ai->Train(50,1);
     ai->INneurons[0] = 0;
