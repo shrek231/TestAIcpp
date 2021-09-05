@@ -2,6 +2,9 @@
 #include <iostream>
 #include <valarray>
 #include <SDL2/SDL.h>
+#include <thread>
+SDL_Renderer* rend;
+
 struct AI {
     float INneurons[5];
     float IN_L1weight[50*5]; //INneurons * L1Nneurons
@@ -12,9 +15,9 @@ struct AI {
     float OPNneurons[5];
 
     float ShouldOutput[5];
-    float OPcost[50*5];
-    float L1_L2cost[50*50];
-    float IN_L1cost[50*5];
+    float OPcost[5];
+    float L1_L2cost[50];
+    float IN_L1cost[5];
     int Train(int trainLoops,int weghtLoops){//train loops is how many times it trains, weght loops is how many times it remakes the weghts after all the train loops, set to 1 by default\786
         printf("Training Started\n");
         float AvrCost[weghtLoops];
@@ -43,14 +46,12 @@ struct AI {
                     for (int outp = 0; outp <= 5 - 1; outp++) {
                         OPcost[w] += (float)pow(OPNneurons[outp] - ShouldOutput[opn],2);
                     }
-                }
-                w = 0;
+                }w = 0;
                 for (int opn = 0; opn <= 5 -1; opn++,w++) {
                     for (int outp = 0; outp <= 50 - 1; outp++) {
                         L1_L2cost[w] += (float)pow(L2Nneurons[outp] - OPNneurons[opn],2);
                     }
-                }
-                w = 0;
+                }w = 0;
                 for (int opn = 0; opn <= 50 - 1; opn++,w++) {
                     for (int outp = 0; outp <= 50 - 1; outp++) {
                         IN_L1cost[w] += (float)pow(L1Nneurons[outp] - L2Nneurons[opn],2);
@@ -100,14 +101,13 @@ struct AI {
                 float percent = (float)i/trainLoops*100;
                 printf("Training: %f%s\n",percent,"% ");
                 //reset
-                /*
                 for (int loop = 0; loop <= 50*5; loop++){
                     OPcost[loop] = 0;
                 }for (int loop = 0; loop <= 50*50; loop++){
                     L1_L2cost[loop] = 0;
                 }for (int loop = 0; loop <= 50*5; loop++){
                     IN_L1cost[loop] = 0;
-                }*/
+                }
             }
             //save weghts
         }
@@ -117,42 +117,40 @@ struct AI {
     int GetOutp(){ //loop the function
         //calculate Neurons values
         //printf("Starting\n");
-        for (int connectEachW; connectEachW <= 50 * 5 - 1; connectEachW++) {
-            for (int i = 0; i <= 5-1; i++) {
-                for (int i_loop = 0; i_loop <= 5 - 1; i_loop++) {
-                    L1Nneurons[i] = 1 / (1 + L1Nneurons[i] + std::exp(-INneurons[i_loop] * IN_L1weight[connectEachW] - 10));//bias 10
-                }
+        int connectEachW = 0;
+        for (int i = 0; i <= 5-1; i++) {
+            for (int i_loop = 0; i_loop <= 50 - 1; i_loop++,connectEachW++) {
+                L1Nneurons[i_loop] = 1 / (1 + std::exp(-INneurons[i] * IN_L1weight[connectEachW] - 10));//bias 10
             }
         }
-        for (int connectEachW; connectEachW <= 50 * 50 - 1; connectEachW++) {
-            for (int i = 0; i <= 50-1; i++) {
-                for (int i_loop = 0; i_loop <= 50 - 1; i_loop++) {
-                    L2Nneurons[i] = 1 / (1 + L2Nneurons[i] + std::exp(-L1Nneurons[i_loop] * L1_L2weight[connectEachW] - 10));//bias 10
-                }
+        connectEachW = 0;
+        for (int i = 0; i <= 5-1; i++) {
+            for (int i_loop = 0; i_loop <= 50 - 1; i_loop++,connectEachW++) {
+                L2Nneurons[i_loop] = 1 / (1 + std::exp(-L1Nneurons[i] * L1_L2weight[connectEachW] - 10));//bias 10
             }
         }
-        for (int connectEachW; connectEachW <= 50 * 5 - 1; connectEachW++) {
-            for (int i = 0; i <= 5-1; i++) {
-                for (int i_loop = 0; i_loop <= 50 - 1; i_loop++) {
-                    OPNneurons[i] = 1 / (1 + OPNneurons[i] + std::exp(-L2Nneurons[i_loop] * L2_OPweight[connectEachW] - 10));//bias 10
-                }
+        connectEachW = 0;
+        for (int i = 0; i <= 5-1; i++) {
+            for (int i_loop = 0; i_loop <= 50 - 1; i_loop++,connectEachW++) {
+                OPNneurons[i_loop] = 1 / (1 + std::exp(-L2Nneurons[i] * L2_OPweight[connectEachW] - 10));//bias 10
             }
         }
     }
 };
-int main(int argc, char *argv[]) {
-    //graphics
+SDL_Renderer* GLoop(){
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window* window = SDL_CreateWindow("Ai Test", SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED, 300, 200, SDL_WINDOW_SHOWN);
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
-    SDL_SetRenderDrawColor(renderer, 155, 155, 155, 255);
+    rend = SDL_CreateRenderer(window, -1, 0);
+    SDL_SetRenderDrawColor(rend, 155, 155, 155, 255);
     //Clear the renderer with the draw color
-    SDL_RenderClear(renderer);
-    SDL_SetRenderDrawColor(renderer,255, 100, 100, 255);
-    SDL_RenderDrawPoint(renderer, 10, 10);
-    //Update the renderer which will show the renderer cleared by the draw color which is green
-    SDL_RenderPresent(renderer);
-    //
+    SDL_RenderClear(rend);
+    while (true){
+        //update renderer
+        SDL_RenderPresent(rend);
+    }
+}
+int main(int argc, char *argv[]) {
+    std::thread Graphics (GLoop);
     AI* ai = new AI;
     ai->Train(50,1);
     ai->INneurons[0] = 0;
