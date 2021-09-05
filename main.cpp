@@ -32,7 +32,11 @@ struct AI {
             }
             for (int i = 0; i <= trainLoops - 1; i++) {
                 //set ShouldOutput to what it should output
-                ShouldOutput[4] = 1;
+                ShouldOutput[0] = 0;
+                ShouldOutput[1] = 0;
+                ShouldOutput[2] = 0;
+                ShouldOutput[3] = 0;
+                ShouldOutput[4] = 10;
                 //set inputs and run the AI
                 INneurons[4] = 1;
                 GetOutp();
@@ -101,12 +105,12 @@ struct AI {
                 float percent = (float)i/trainLoops*100;
                 printf("Training: %f%s\n",percent,"% ");
                 //reset
-                for (int loop = 0; loop <= 50*5; loop++){
+                for (int loop = 0; loop <= 5; loop++){
                     OPcost[loop] = 0;
-                }for (int loop = 0; loop <= 50*50; loop++){
-                    L1_L2cost[loop] = 0;
-                }for (int loop = 0; loop <= 50*5; loop++){
-                    IN_L1cost[loop] = 0;
+                }for (int loop_ = 0; loop_ <= 50; loop_++){
+                    L1_L2cost[loop_] = 0;
+                }for (int loop__ = 0; loop__ <= 5; loop__++){
+                    IN_L1cost[loop__] = 0;
                 }
             }
             //save weghts
