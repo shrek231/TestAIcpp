@@ -6,7 +6,7 @@
 SDL_Renderer* rend;
 
 struct AI {
-    float INneurons[5];
+    float INneurons[5]; //make this a 2d array and add bais's to it
     float IN_L1weight[50*5]; //INneurons * L1Nneurons
     float L1Nneurons[50];
     float L1_L2weight[50*50]; //L1Nneurons * L2Nneurons
@@ -29,14 +29,9 @@ struct AI {
                 L1_L2weight[RandW] = (float)(rand() % 20 - 10);
             }for(int RandW = 0; RandW <= 50*5-1; RandW++){
                 L2_OPweight[RandW] = (float)(rand() % 20 - 10);
-            }
-            for (int i = 0; i <= trainLoops - 1; i++) {
+            }for (int i = 0; i <= trainLoops - 1; i++) {
                 //set ShouldOutput to what it should output
-                ShouldOutput[0] = 0;
-                ShouldOutput[1] = 0;
-                ShouldOutput[2] = 0;
-                ShouldOutput[3] = 0;
-                ShouldOutput[4] = 10;
+                ShouldOutput[4] = 1;
                 //set inputs and run the AI
                 INneurons[4] = 1;
                 GetOutp();
@@ -124,19 +119,19 @@ struct AI {
         int connectEachW = 0;
         for (int i = 0; i <= 5-1; i++) {
             for (int i_loop = 0; i_loop <= 50 - 1; i_loop++,connectEachW++) {
-                L1Nneurons[i_loop] = 1 / (1 + std::exp(-INneurons[i] * IN_L1weight[connectEachW] - 10));//bias 10
+                L1Nneurons[i_loop] = 1 / (1 + std::exp(-INneurons[i] * IN_L1weight[connectEachW] - 1));//bias 1
             }
         }
         connectEachW = 0;
         for (int i = 0; i <= 5-1; i++) {
             for (int i_loop = 0; i_loop <= 50 - 1; i_loop++,connectEachW++) {
-                L2Nneurons[i_loop] = 1 / (1 + std::exp(-L1Nneurons[i] * L1_L2weight[connectEachW] - 10));//bias 10
+                L2Nneurons[i_loop] = 1 / (1 + std::exp(-L1Nneurons[i] * L1_L2weight[connectEachW] - 1));//bias 1
             }
         }
-        connectEachW = 0;
-        for (int i = 0; i <= 5-1; i++) {
-            for (int i_loop = 0; i_loop <= 50 - 1; i_loop++,connectEachW++) {
-                OPNneurons[i_loop] = 1 / (1 + std::exp(-L2Nneurons[i] * L2_OPweight[connectEachW] - 10));//bias 10
+        int OP_wight_loop = 0;
+        for (int Layer2_Loop = 0; Layer2_Loop <= 5-1; Layer2_Loop++) {
+            for (int OP_loop = 0; OP_loop <= 5 - 1; OP_loop++,OP_wight_loop++) {
+                OPNneurons[OP_loop] = 1 / (1 + std::exp(-L2Nneurons[Layer2_Loop] * L2_OPweight[OP_wight_loop] - 1));//bias 1
             }
         }
     }
@@ -157,11 +152,7 @@ int main(int argc, char *argv[]) {
     std::thread Graphics (GLoop);
     AI* ai = new AI;
     ai->Train(50,1);
-    ai->INneurons[0] = 0;
-    ai->INneurons[1] = 0;
-    ai->INneurons[2] = 0;
-    ai->INneurons[3] = 0;
-    ai->INneurons[4] = 1; //10 is max on
+    ai->INneurons[4] = 1; //1 is max on
     ai->GetOutp();
     for(int i = 0;i <= 4;i++){
         printf("%f\n",ai->OPNneurons[i]);
